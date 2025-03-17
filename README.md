@@ -1,223 +1,131 @@
-# LegalMatch - Платформа для поиска юристов
+# 🤝 LegalMatch
 
-## Настройка проекта
+<div align="center">
 
-### 1. Настройка Firebase
+![LegalMatch Banner](public/banner.png)
 
-1. Создайте проект в [Firebase Console](https://console.firebase.google.com/)
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Google Cloud](https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)](https://cloud.google.com/)
 
-2. Включите следующие сервисы:
-   - Authentication (Email/Password)
-   - Firestore Database
-   - Storage
+[English](#english) | [Русский](#русский)
 
-3. Создайте файл `.env` в корне проекта и добавьте следующие переменные:
-```env
-VITE_GEMINI_API_KEY=your_gemini_api_key
-VITE_FIREBASE_API_KEY=your_firebase_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-VITE_FIREBASE_APP_ID=your_app_id
-```
+</div>
 
-4. Настройте правила безопасности в Firestore:
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    // User profiles
-    match /users/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == userId;
-    }
-    
-    // Lawyer profiles
-    match /lawyers/{lawyerId} {
-      allow read: if true;
-      allow write: if request.auth != null && 
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'lawyer';
-    }
-    
-    // Cases
-    match /cases/{caseId} {
-      allow read: if request.auth != null && (
-        resource.data.clientId == request.auth.uid ||
-        resource.data.lawyerId == request.auth.uid
-      );
-      allow create: if request.auth != null;
-      allow update, delete: if request.auth != null && (
-        resource.data.clientId == request.auth.uid ||
-        resource.data.lawyerId == request.auth.uid
-      );
-    }
-    
-    // Consultations
-    match /consultations/{consultationId} {
-      allow read, write: if request.auth != null && 
-        resource.data.participantIds.hasAny([request.auth.uid]);
-    }
-    
-    // Messages
-    match /messages/{messageId} {
-      allow read, write: if request.auth != null && 
-        resource.data.participantIds.hasAny([request.auth.uid]);
-    }
-    
-    // Documents
-    match /documents/{documentId} {
-      allow read, write: if request.auth != null && 
-        resource.data.userId == request.auth.uid;
-    }
-    
-    // Reviews
-    match /reviews/{reviewId} {
-      allow read: if true;
-      allow create: if request.auth != null;
-      allow update, delete: if request.auth != null && 
-        resource.data.userId == request.auth.uid;
-    }
-  }
-}
-```
+---
 
-5. Настройте правила безопасности для Storage:
-```javascript
-rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
-    match /{allPaths=**} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && 
-        request.resource.size < 5 * 1024 * 1024 && // 5MB max
-        request.resource.contentType.matches('image/.*|application/pdf');
-    }
-  }
-}
-```
+<a name="english"></a>
+# 🇺🇸 English
 
-### 2. Установка зависимостей
+<div align="center">
+<img src="public/section-banners.png" alt="Features" width="600"/>
+</div>
 
-```bash
-npm install
-```
+## 📋 About
+LegalMatch is a modern platform connecting clients with legal professionals, powered by AI assistance and real-time communication.
 
-### 3. Запуск проекта
+## ✨ Key Features
+- 🤖 AI-powered lawyer matching
+- 💬 Real-time consultations
+- 📄 Secure document exchange
+- 🔐 End-to-end encryption
+- 🌐 Multi-language support
 
-```bash
-npm run dev
-```
+<div align="center">
+<img src="public/features.gif" alt="Features Demo" width="600"/>
+</div>
 
-## Структура проекта
+## 🛠️ Tech Stack
+- ⚛️ React + TypeScript
+- 🔥 Firebase
+- 🎨 Tailwind CSS
+- 🚀 Vite
+- 🤖 Google Gemini AI
 
+## 📁 Project Structure
 ```
 src/
-├── components/          # React компоненты
-│   ├── ai/             # AI-компоненты
-│   ├── auth/           # Компоненты авторизации
-│   ├── dashboard/      # Компоненты дашборда
-│   ├── registration/   # Компоненты регистрации
-│   └── settings/       # Компоненты настроек
-├── config/             # Конфигурация Firebase
-├── context/           # React контексты
-├── services/          # Сервисы для работы с API
-│   ├── firebase/      # Firebase сервисы
-│   └── ai/            # AI сервисы
-├── types/             # TypeScript типы
-└── utils/             # Утилиты
+├── components/     # UI Components
+├── pages/         # Route Pages
+├── services/      # API Services
+├── hooks/         # Custom Hooks
+├── utils/         # Helper Functions
+└── types/         # TypeScript Types
 ```
 
-## Основные функции
-
-### Для клиентов:
-- Поиск юристов
-- Онлайн-консультации
-- Управление документами
-- AI-помощник для подбора юриста
-
-### Для юристов:
-- Управление профилем
-- Календарь консультаций
-- Работа с клиентами
-- AI-анализ документов
-
-### Для разработчиков:
-- API доступ
-- Документация
-- Мониторинг
-- Интеграция AI
-
-## Роли пользователей
-
-1. **Клиент**
-   - Поиск юристов
-   - Запись на консультации
-   - Управление документами
-
-2. **Юрист**
-   - Управление профилем
-   - Календарь консультаций
-   - Работа с клиентами
-
-3. **Разработчик**
-   - Доступ к API
-   - Мониторинг
-   - Интеграция
-
-## Безопасность
-
-- Все запросы к API защищены авторизацией
-- Файлы проверяются на размер и тип
-- Данные пользователей шифруются
-- AI-анализ проходит модерацию
-
-## Поддержка
-
-При возникновении проблем:
-1. Проверьте правильность переменных окружения
-2. Убедитесь, что Firebase проект настроен правильно
-3. Проверьте консоль на наличие ошибок
-4. Обратитесь к документации Firebase
-
-## Разработка
-
-### Добавление новых функций
-
-1. Создайте новую ветку:
+## 🚀 Quick Start
 ```bash
-git checkout -b feature/new-feature
-```
+# Install dependencies
+npm install
 
-2. Внесите изменения и протестируйте
+# Start development server
+npm run dev
 
-3. Создайте pull request
-
-### Тестирование
-
-```bash
-npm run test
-```
-
-### Сборка
-
-```bash
+# Build for production
 npm run build
 ```
 
-## Деплой
+---
 
-1. Настройте Firebase Hosting:
-```bash
-firebase init hosting
+<a name="русский"></a>
+# 🇷🇺 Русский
+
+## 📋 О проекте
+LegalMatch - современная платформа для поиска юристов с AI-ассистентом и общением в реальном времени.
+
+<div align="center">
+<img src="public/demo-ru.gif" alt="Демо" width="600"/>
+</div>
+
+## ✨ Возможности
+- 🤖 Умный подбор юристов
+- 💬 Онлайн консультации
+- 📄 Безопасный обмен документами
+- 🔐 Сквозное шифрование
+- 🌐 Мультиязычность
+
+## 🛠️ Технологии
+- ⚛️ React + TypeScript
+- 🔥 Firebase
+- 🎨 Tailwind CSS
+- 🚀 Vite
+- 🤖 Google Gemini AI
+
+## 📁 Структура проекта
+```
+src/
+├── components/     # UI компоненты
+├── pages/         # Страницы
+├── services/      # API сервисы
+├── hooks/         # Хуки
+├── utils/         # Утилиты
+└── types/         # TypeScript типы
 ```
 
-2. Соберите проект:
+## 🚀 Быстрый старт
 ```bash
+# Установка зависимостей
+npm install
+
+# Запуск сервера разработки
+npm run dev
+
+# Сборка для продакшена
 npm run build
 ```
 
-3. Разверните на Firebase:
-```bash
-firebase deploy
-```
+## 📦 Основные файлы
+
+`.env` - Конфигурация окружения  
+`.firebaserc` - Конфигурация Firebase  
+`firebase.json` - Настройки Firebase  
+`vite.config.ts` - Конфигурация Vite  
+`tailwind.config.js` - Настройки Tailwind CSS  
+`tsconfig.json` - Конфигурация TypeScript  
+
+## 📫 Контакты
+Email: abloko362@gmail.com
